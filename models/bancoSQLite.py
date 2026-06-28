@@ -4,13 +4,14 @@ import os
 import requests
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 from config import banco_de_dados as bd
+from config import GESTAO_API_BASE_URL
 
 
 def importar_professores_da_api():
-    url = "https://new-api-flask2.onrender.com/api/professores"
+    url = f"{GESTAO_API_BASE_URL}/api/professores"
     
     try:
-        resposta = requests.get(url)
+        resposta = requests.get(url, timeout=10)
         resposta.raise_for_status()
         professores = resposta.json()
 

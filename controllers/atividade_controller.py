@@ -1,15 +1,15 @@
 from flask import Blueprint, jsonify, request
 from models.bancoSQLite import BancoSQLite
 import requests
-from clients.pessoa_service_client import PessoaServiceClient
+from config import GESTAO_API_BASE_URL
 
 atividade_bp = Blueprint('atividade_bp', __name__)
 
-API_ESCOLAR_URL = "https://new-api-flask2.onrender.com/api/professores"
+API_ESCOLAR_URL = f"{GESTAO_API_BASE_URL}/api/professores"
 
 def validar_professor(id_professor):
     try:
-        resposta = requests.get(f"{API_ESCOLAR_URL}/{id_professor}")
+        resposta = requests.get(f"{API_ESCOLAR_URL}/{id_professor}", timeout=10)
         return resposta.status_code == 200
     except requests.exceptions.RequestException as e:
         print(f"Erro ao validar professor: {e}")
@@ -17,14 +17,14 @@ def validar_professor(id_professor):
     
 @atividade_bp.route('/atividades', methods=['POST'])
 def criar_atividade():
-    data = request.json
+    data = request.get_json(silent=True) or {}
     campos_obrigatorios = ["id_professor", "nome_atividade", "nota"]
 
     if not all(campo in data for campo in campos_obrigatorios):
         return jsonify({"erro": "Dados incompletos"}), 400
 
     professor_valido = validar_professor(data["id_professor"])
-    if validar_professor is None:
+    if professor_valido is None:
         return jsonify({"erro": "Erro ao conectar com a API de Professor"}), 503
     if not professor_valido:
         return jsonify({"erro": "Professor não encontrado"}), 404
@@ -42,8 +42,8 @@ def criar_atividade():
         banco.conexao.commit()
         return jsonify({"mensagem": "Atividade criada com sucesso"}), 201
     except Exception as e:
-        print("Erro ao criar atividade:")
-        return jsonify({"erro": "Erro ao criar atividade"+ e}), 500
+        print("Erro ao criar atividade:", e)
+        return jsonify({"erro": "Erro ao criar atividade: " + str(e)}), 500
     finally:
         banco.close()
 
