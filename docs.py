@@ -53,7 +53,25 @@ OPENAPI_SPEC = {
                     "503": {"description": "Erro ao conectar com a API de Professor"},
                 },
             },
-        }
+        },
+        "/atividades/{atividade_id}": {
+            "delete": {
+                "summary": "Remove uma atividade",
+                "parameters": [
+                    {
+                        "name": "atividade_id",
+                        "in": "path",
+                        "required": True,
+                        "schema": {"type": "integer"},
+                    }
+                ],
+                "responses": {
+                    "200": {"description": "Atividade removida"},
+                    "404": {"description": "Atividade nao encontrada"},
+                    "500": {"description": "Erro ao deletar atividade"},
+                },
+            }
+        },
     },
     "components": {
         "schemas": {

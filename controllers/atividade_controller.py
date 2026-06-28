@@ -65,3 +65,19 @@ def listar_atividades():
         return jsonify({"erro": "Erro ao buscar atividades"}), 500
     finally:
         banco.close()
+
+
+@atividade_bp.route('/atividades/<int:atividade_id>', methods=['DELETE'])
+def deletar_atividade(atividade_id):
+    banco = BancoSQLite()
+    try:
+        banco.cursor.execute("DELETE FROM ATIVIDADES WHERE id = ?", (atividade_id,))
+        banco.conexao.commit()
+        if banco.cursor.rowcount == 0:
+            return jsonify({"erro": "Atividade nao encontrada"}), 404
+        return jsonify({"mensagem": "Atividade removida com sucesso"}), 200
+    except Exception as e:
+        print("Erro ao deletar atividade:", e)
+        return jsonify({"erro": "Erro ao deletar atividade: " + str(e)}), 500
+    finally:
+        banco.close()
