@@ -1,10 +1,12 @@
 from config import *
 from controllers.atividade_controller import atividade_bp
+from docs import docs_bp
 from models.bancoSQLite import importar_professores_da_api
 from models.bancoSQLite import inicializar_banco
 
 app = create_app()
 app.register_blueprint(atividade_bp)
+app.register_blueprint(docs_bp)
 
 
 inicializar_banco()
